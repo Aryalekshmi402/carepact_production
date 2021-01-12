@@ -47,22 +47,40 @@ const App = () => {
   ));
   const [suggestions, setSuggestion] = useState([]);
   const autoSuggestion = suggestions.map(item => (
-    <li style={styles.suggestionLi}>{item.name}</li>
+    <li style={styles.suggestionLi}>{item.product}</li>
   ));
   const optionchange = (props)=>{
     setSuggestion([]);
     console.log(props.target.value);
-    axios
-      .get("http://localhost:7777/api/suggestions", {
-        params: {
-          props: props.target.value
-        },
-        mode: "no-cors"
+    fetch("http://localhost:7777/api/suggestions", 
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    })
+
+      // {
+      //   params: {
+      //     props: props.target.value
+      //   },
+        // mode: "no-cors"
+      // }
+      .then(res => {
+        console.log(res);
+        return res.json();
       })
-      .then(function(response) {
-       setSuggestion(response.data.data)
-      console.log(response.data.data)
+      .then(sug => {
+        // alert('success')
+        // console.log(sug);
+        setSuggestion(sug);
+        console.log(sug);
       })
+      // .then(function(response) {
+      //  setSuggestion(response)
+      // console.log(response)
+      // })
       .catch(function(error) {
         console.log(error);
       });
@@ -195,17 +213,16 @@ const App = () => {
                             style={{
                               width: 170,
                               marginLeft: 9,
-                              marginTop: -180
+                              marginTop: -180,
                             }}
-                            
                             onChange={optionchange}
                           />
                           
-                            {suggestions.length && (
+                            {suggestions.length > 0 ?(
                             <ul style={styles.suggestionUl}>
                               {autoSuggestion}
                             </ul>
-                          )}
+                          ):''}
                         </div>
                       </FormItem>
                     </div>
