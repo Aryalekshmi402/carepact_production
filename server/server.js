@@ -25,10 +25,25 @@ var pro_details = new Schema(
   },
   { versionKey: false }
 );
+var product_master = new Schema(
+  {
+    product: { type: String },
+    qty: { type: String },
+    mrp: { type: String },
+    batch: { type: String },
+    free: { type: String },
+  },
+  { versionKey: false }
+);
 
 var Sample = mongoose.model("store", pro_details, "store");
 
-var ProductMaster = mongoose.model("store", pro_details, "store");
+var ProductMaster = mongoose.model("product_master", product_master, "product_master");
+var kitty = new ProductMaster({ product: 'Zildjian',qty:'10',mrp:'200',batch:'a23',free:'8' });
+kitty.save(function (err) {
+  if (err) // ...
+  console.log('meow');
+});
 
 //api for get data from database
 app.get("/api/getdata", cors(), function(req, res) {
@@ -44,15 +59,23 @@ app.get("/api/getdata", cors(), function(req, res) {
 
 app.get("/api/suggestions", cors(), function(req, res) {
   
-  const data = db
-    .collection("product_master")
-    .find({})
-    .toArray(function(err, result) {
-      if (err) throw err;
-      console.log(result);
-      db.close();
-    });
-  res.send(data);
+  ProductMaster.find({}, function(err, data) {
+    if (err) {
+      res.send(err);
+    } else {
+      
+      res.send(data);
+    }
+  });
+  // const data = db
+  //   .collection("product_master")
+  //   .find({})
+  //   .toArray(function(err, result) {
+  //     if (err) throw err;
+  //     console.log(result);
+  //     db.close();
+  //   });
+  // res.send(data);
 });
 
 app.post("/api/savedata", function(req, res) {
