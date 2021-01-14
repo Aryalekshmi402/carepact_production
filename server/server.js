@@ -39,11 +39,11 @@ var product_master = new Schema(
 var Sample = mongoose.model("store", pro_details, "store");
 
 var ProductMaster = mongoose.model("product_master", product_master, "product_master");
-var kitty = new ProductMaster({ product: 'Zildjian',qty:'10',mrp:'200',batch:'a23',free:'8' });
-kitty.save(function (err) {
-  if (err) // ...
-  console.log('meow');
-});
+// var kitty = new ProductMaster({ product: 'Zildjian',qty:'10',mrp:'200',batch:'a23',free:'8' });
+// kitty.save(function (err) {
+//   if (err) // ...
+//   console.log('meow');
+// });
 
 //api for get data from database
 app.get("/api/getdata", cors(), function(req, res) {
