@@ -3,11 +3,12 @@ import { Container, Row, Col, Card, CardHeader, CardBody } from "shards-react";
 import Frame from "react-frame-component";
 import axios from "axios";
 import { styles } from "./style";
-
+import { Button, Modal } from "react-bootstrap";
 import { Form, Input } from "antd";
 
 import PageTitle from "../components/common/PageTitle";
 import FormItem from "antd/lib/form/FormItem";
+import { ClickAwayListener } from "@material-ui/core";
 
 axios.get("http://localhost:7777/api/getdata", {
   params: {}
@@ -20,8 +21,6 @@ const FormSizeDemo = () => {
     setComponentSize(size);
   };
 };
-
-
 
 function selectdata(props) {
   var self = this;
@@ -38,34 +37,43 @@ function selectdata(props) {
     });
 }
 
-
 const App = () => {
-  
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   const [list, setList] = useState([]);
   let optionItems = list.map(planet => (
     <option key={planet.name}>{planet.name}</option>
   ));
   const [suggestions, setSuggestion] = useState([]);
+  const [itemName, setItemName] = useState("");
+  const getDetails = item => {
+    setItemName(item.product);
+    setSuggestion([])
+  };
   const autoSuggestion = suggestions.map(item => (
-    <li style={styles.suggestionLi}>{item.product}</li>
+    <li style={styles.suggestionLi} onClick={() => getDetails(item)}>
+      {item.product}
+    </li>
   ));
-  const optionchange = (props)=>{
+  const optionchange = props => {
     setSuggestion([]);
+    setItemName(props.target.value);
     console.log(props.target.value);
-    fetch("http://localhost:7777/api/suggestions", 
-    {
+    fetch("http://localhost:7777/api/suggestions", {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json"
       }
     })
-
       // {
       //   params: {
       //     props: props.target.value
       //   },
-        // mode: "no-cors"
+      // mode: "no-cors"
       // }
       .then(res => {
         console.log(res);
@@ -74,7 +82,9 @@ const App = () => {
       .then(sug => {
         // alert('success')
         // console.log(sug);
-        setSuggestion(sug);
+        if (sug.length) {
+          setSuggestion(sug);
+        }
         console.log(sug);
       })
       // .then(function(response) {
@@ -84,8 +94,8 @@ const App = () => {
       .catch(function(error) {
         console.log(error);
       });
-  }
-  
+  };
+
   const getData = () => {
     fetch("http://localhost:7777/api/getdata", {
       method: "GET",
@@ -101,7 +111,9 @@ const App = () => {
       .then(apiResponse => {
         // alert('success')
         console.log(apiResponse);
-        setList(apiResponse);
+        if (apiResponse.length) {
+          setList(apiResponse);
+        }
       })
       .catch(err => console.log(err));
   };
@@ -109,8 +121,6 @@ const App = () => {
     //alert(1)
     getData();
   }, []);
-
-  
 
   return (
     <div className="App">
@@ -195,7 +205,7 @@ const App = () => {
                         />
                       </FormItem>
                     </div>
-                    
+
                     <div style={{ marginTop: 7, marginLeft: 20 }}>
                       <FormItem>
                         {" "}
@@ -206,23 +216,25 @@ const App = () => {
                             position: "relative"
                           }}
                         >
-                          
                           <Input
-                          onBlur={()=>setSuggestion([])}
+                            // onBlur={() => setSuggestion([])}
                             type="search"
+                            value={itemName}
                             style={{
                               width: 170,
                               marginLeft: 9,
-                              marginTop: -180,
+                              marginTop: -180
                             }}
                             onChange={optionchange}
                           />
-                          
-                            {suggestions.length > 0 ?(
+
+                          {suggestions.length > 0 ? (
                             <ul style={styles.suggestionUl}>
                               {autoSuggestion}
                             </ul>
-                          ):''}
+                          ) : (
+                            ""
+                          )}
                         </div>
                       </FormItem>
                     </div>
@@ -366,6 +378,7 @@ const App = () => {
                       <FormItem>
                         &nbsp;&nbsp;
                         <button
+                          onClick={handleShow}
                           style={{
                             width: 100,
                             height: 35,
@@ -654,6 +667,247 @@ const App = () => {
                       </tbody>
                     </table>
                   </Frame>
+
+                  <div style={{ width: 100 }}>
+                    <Modal show={show} onHide={handleClose}>
+                      <Modal.Header closeButton>
+                        <Modal.Title>New Entry</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body style={{ height: 500, width: 500 }}>
+                        <Form>
+                          <FormItem>
+                            <div>
+                              Item
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 22,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <br />
+                            <div style={{ marginLeft: 182, marginTop: -45 }}>
+                              Manufacturer
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 32,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <div style={{ marginTop: 22 }}>
+                              HSN
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 22,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <br />
+                            <div style={{ marginLeft: 182, marginTop: -45 }}>
+                              Schedule_Name
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 18,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <div style={{ marginTop: 22 }}>
+                              UOM
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 20,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <br />
+                            <div style={{ marginLeft: 200, marginTop: -45 }}>
+                              Strip/sale
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 43,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <div style={{ marginTop: 22 }}>
+                              PACK
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 20,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <br />
+                            <div style={{ marginLeft: 210, marginTop: -45 }}>
+                              Location
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 38,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <div style={{ marginTop: 22 }}>
+                              RACK
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 19,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <br />
+                            <div style={{ marginLeft: 210, marginTop: -45 }}>
+                              Subrack
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 44,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <div style={{ marginTop: 22 }}>
+                              MRP
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 24,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <br />
+                            <div style={{ marginLeft: 182, marginTop: -45 }}>
+                              major_content
+                              <Input
+                                type="text"
+                                style={{
+                                  width: 100,
+                                  marginLeft: 29,
+                                  marginTop: -30
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Frame
+                                style={{
+                                  marginTop: 20,
+                                  width: 440,
+                                  background: "#9ac182"
+                                }}
+                              >
+                                <div style={{ marginTop: 22 }}>
+                                  sgct
+                                  <Input
+                                    type="text"
+                                    style={{
+                                      width: 100,
+                                      marginLeft: 24,
+                                      marginTop: -30
+                                    }}
+                                  />
+                                </div>
+                                <br />
+                                <div
+                                  style={{ marginLeft: 182, marginTop: -40 }}
+                                >
+                                  strd_disc
+                                  <Input
+                                    type="text"
+                                    style={{
+                                      width: 100,
+                                      marginLeft: 23,
+                                      marginTop: -30
+                                    }}
+                                  />
+                                </div>
+                                <div style={{ marginTop: 22 }}>
+                                  cgst
+                                  <Input
+                                    type="text"
+                                    style={{
+                                      width: 100,
+                                      marginLeft: 20,
+                                      marginTop: -30
+                                    }}
+                                  />
+                                </div>
+                                <br />
+                                <div
+                                  style={{ marginLeft: 182, marginTop: -45 }}
+                                >
+                                  max_disc
+                                  <Input
+                                    type="text"
+                                    style={{
+                                      width: 100,
+                                      marginLeft: 20,
+                                      marginTop: -30
+                                    }}
+                                  />
+                                </div>
+                                <div style={{ marginTop: 22 }}>
+                                  igst
+                                  <Input
+                                    type="text"
+                                    style={{
+                                      width: 100,
+                                      marginLeft: 24,
+                                      marginTop: -30
+                                    }}
+                                  />
+                                </div>
+                                <br />
+                                <div
+                                  style={{ marginLeft: 182, marginTop: -45 }}
+                                >
+                                  gst_flag
+                                  <Input
+                                    type="text"
+                                    style={{
+                                      width: 100,
+                                      marginLeft: 29,
+                                      marginTop: -30
+                                    }}
+                                  />
+                                </div>
+                              </Frame>
+                            </div>
+                          </FormItem>
+                        </Form>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button onClick={handleClose}>Close</Button>
+                        <Button onClick={handleClose}>Save Changes</Button>
+                      </Modal.Footer>
+                    </Modal>
+                  </div>
                 </Form>
               </CardBody>
             </Card>

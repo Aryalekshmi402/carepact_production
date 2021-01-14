@@ -14,7 +14,8 @@ export const styles = {
     suggestionLi:{
         listStyle:'none',
         padding:'3px 5px',
-        borderBottom:'1px solid rgb(118, 118, 118)'
+        borderBottom:'1px solid rgb(118, 118, 118)',
+        cursor:'pointer'
        
     }
 }
