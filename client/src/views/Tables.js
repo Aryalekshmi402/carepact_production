@@ -5,10 +5,8 @@ import axios from "axios";
 import { styles } from "./style";
 import { Button, Modal } from "react-bootstrap";
 import { Form, Input } from "antd";
-
 import PageTitle from "../components/common/PageTitle";
 import FormItem from "antd/lib/form/FormItem";
-import { ClickAwayListener } from "@material-ui/core";
 
 axios.get("http://localhost:7777/api/getdata", {
   params: {}
@@ -38,8 +36,24 @@ function selectdata(props) {
 }
 
 const App = () => {
-  const [show, setShow] = useState(false);
+  const [state, setState] = useState({
+    name: ''
+  });
 
+  const [name, setEmail] = React.useState("");
+  const [manufacture, setManufacture] = React.useState("");
+  const [hsn, setHsn] = React.useState("");
+  const [schname, setSchname] = React.useState("");
+  const [uom, setUom] = React.useState("");
+  const [strip, setStrip] = React.useState("");
+  const [pack, setPack] = React.useState("");
+  const [loc, setLoc] = React.useState("");
+  const [rack, setRack] = React.useState("");
+  const [subrack, setSubrack] = React.useState("");
+  const [mrp, setMrp] = React.useState("");
+  const [mcontent, setMcontent] = React.useState("");
+
+  const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -63,39 +77,55 @@ const App = () => {
     setItemName(props.target.value);
     console.log(props.target.value);
     fetch("http://localhost:7777/api/suggestions", {
-      method: "GET",
+      method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json"
-      }
+      },
+      body: JSON.stringify({ name: props.target.value })
     })
-      // {
-      //   params: {
-      //     props: props.target.value
-      //   },
-      // mode: "no-cors"
-      // }
       .then(res => {
         console.log(res);
         return res.json();
       })
       .then(sug => {
-        // alert('success')
-        // console.log(sug);
         if (sug.length) {
           setSuggestion(sug);
         }
         console.log(sug);
       })
-      // .then(function(response) {
-      //  setSuggestion(response)
-      // console.log(response)
-      // })
       .catch(function(error) {
         console.log(error);
       });
   };
 
+  const handleSubmit =event => {
+    axios({
+      url:"http://localhost:7777/api/form_data",
+      method: 'POST',
+      data: {
+        product: name,
+        manufacture:manufacture,
+        hsn:hsn,
+        schname:schname,
+        uom:uom,
+        strip:strip,
+        pack:pack,
+        loc:loc,
+        rack:rack,
+        subrack:subrack,
+        mrp:mrp
+      }
+      
+    }).then((response) => {
+      alert(response.data.data);
+      handleClose();
+     
+    });
+    event.preventDefault();
+    
+  }
+  
   const getData = () => {
     fetch("http://localhost:7777/api/getdata", {
       method: "GET",
@@ -117,10 +147,12 @@ const App = () => {
       })
       .catch(err => console.log(err));
   };
+  
   useEffect(() => {
     //alert(1)
     getData();
   }, []);
+  
 
   return (
     <div className="App">
@@ -178,7 +210,7 @@ const App = () => {
                     span: 1
                   }}
                   layout="horizontal"
-                  initialValues={{
+       initialValues={{
                     size: 1
                   }}
                   onValuesChange={2}
@@ -192,6 +224,7 @@ const App = () => {
                   >
                     <div style={{ color: "#ff0000" }}>Product details</div>
                     <br />
+                    
                     <div style={{ marginTop: 6, marginLeft: 20 }}>
                       <FormItem>
                         Itemcode &nbsp;&nbsp;
@@ -674,12 +707,15 @@ const App = () => {
                         <Modal.Title>New Entry</Modal.Title>
                       </Modal.Header>
                       <Modal.Body style={{ height: 500, width: 500 }}>
-                        <Form>
+                        <Form method="POST" onSubmit={handleSubmit}>
                           <FormItem>
                             <div>
                               Item
                               <Input
                                 type="text"
+                                name="name"
+                                value={name}
+                                onChange={e => setEmail(e.target.value)}
                                 style={{
                                   width: 100,
                                   marginLeft: 22,
@@ -692,6 +728,9 @@ const App = () => {
                               Manufacturer
                               <Input
                                 type="text"
+                                name="manufacture"
+                                value={manufacture}
+                                onChange={e => setManufacture(e.target.value)}
                                 style={{
                                   width: 100,
                                   marginLeft: 32,
@@ -703,6 +742,9 @@ const App = () => {
                               HSN
                               <Input
                                 type="text"
+                                name="hsn"
+                                value={hsn}
+                                onChange={e => setHsn(e.target.value)}
                                 style={{
                                   width: 100,
                                   marginLeft: 22,
@@ -715,6 +757,9 @@ const App = () => {
                               Schedule_Name
                               <Input
                                 type="text"
+                                name="schname"
+                                value={schname}
+                                onChange={e => setSchname(e.target.value)}
                                 style={{
                                   width: 100,
                                   marginLeft: 18,
@@ -726,6 +771,9 @@ const App = () => {
                               UOM
                               <Input
                                 type="text"
+                                name="uom"
+                                onChange={e => setUom(e.target.value)}
+                                value={uom}
                                 style={{
                                   width: 100,
                                   marginLeft: 20,
@@ -738,6 +786,9 @@ const App = () => {
                               Strip/sale
                               <Input
                                 type="text"
+                                name="strip"
+                                onChange={e => setStrip(e.target.value)}
+                                value={strip}
                                 style={{
                                   width: 100,
                                   marginLeft: 43,
@@ -749,6 +800,9 @@ const App = () => {
                               PACK
                               <Input
                                 type="text"
+                                name="pack"
+                                onChange={e => setPack(e.target.value)}
+                                value={pack}
                                 style={{
                                   width: 100,
                                   marginLeft: 20,
@@ -761,6 +815,9 @@ const App = () => {
                               Location
                               <Input
                                 type="text"
+                                name="loc"
+                                onChange={e => setLoc(e.target.value)}
+                                value={loc}
                                 style={{
                                   width: 100,
                                   marginLeft: 38,
@@ -772,6 +829,9 @@ const App = () => {
                               RACK
                               <Input
                                 type="text"
+                                name="rack"
+                                onChange={e => setRack(e.target.value)}
+                                value={rack}
                                 style={{
                                   width: 100,
                                   marginLeft: 19,
@@ -784,6 +844,9 @@ const App = () => {
                               Subrack
                               <Input
                                 type="text"
+                                name="subrack"
+                                onChange={e => setSubrack(e.target.value)}
+                                value={subrack}
                                 style={{
                                   width: 100,
                                   marginLeft: 44,
@@ -795,6 +858,9 @@ const App = () => {
                               MRP
                               <Input
                                 type="text"
+                                name="mrp"
+                                onChange={e => setMrp(e.target.value)}
+                                value={mrp}
                                 style={{
                                   width: 100,
                                   marginLeft: 24,
@@ -807,6 +873,9 @@ const App = () => {
                               major_content
                               <Input
                                 type="text"
+                                name="mcontent"
+                                onChange={e => setMcontent(e.target.value)}
+                                value={mcontent}
                                 style={{
                                   width: 100,
                                   marginLeft: 29,
@@ -904,7 +973,7 @@ const App = () => {
                       </Modal.Body>
                       <Modal.Footer>
                         <Button onClick={handleClose}>Close</Button>
-                        <Button onClick={handleClose}>Save Changes</Button>
+                        <Button onClick={handleSubmit}>Save Changes</Button>
                       </Modal.Footer>
                     </Modal>
                   </div>
