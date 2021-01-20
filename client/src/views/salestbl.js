@@ -55,40 +55,26 @@ const App = () => {
   const [itemcode, setitemcode] = React.useState("");
   const [batchno, setbatchno] = React.useState("");
   const [manuf, setmanuf] = React.useState("");
-  const [qun, setqun] = React.useState(0);
-  const [mr, setmr] = React.useState(0);
-  const [pur, setpur] = React.useState(0);
+  const [qun, setqun] = React.useState("");
+  const [mr, setmr] = React.useState("");
+  const [pur, setpur] = React.useState("");
   const [exp, setexp] = React.useState("");
   const [hs, seths] = React.useState("");
   const [inv, setinv] = React.useState("");
   const [invdate, setinvdate] = React.useState("");
   const [supp, setsupp] = React.useState("");
   const [gender, setgender] = React.useState("");
-  const [tax, settax] = React.useState(0);
-  const [dis, setdis] = React.useState(0);
+  const [tax, settax] = React.useState("");
+  const [dis, setdis] = React.useState("");
   const [disam, setdisam] = React.useState("");
-  const [sgs, setsgs] = React.useState(0);
+  const [sgs, setsgs] = React.useState("");
   const [cgs, setcgs] = React.useState("");
   const [ces, setces] = React.useState("");
   const [totalgs, settotalgs] = React.useState("");
-  const [taxam, settaxam] = React.useState(0);
-  const [netam, setnetam] = React.useState(0);
+  const [taxam, settaxam] = React.useState("");
+  const [netam, setnetam] = React.useState("");
 
 
-
-let cmrp=parseFloat(mr);//mrp
-let cpur=parseFloat(pur);//purchase rate
-let cdis=parseFloat(dis);//discount percentage
-let discountamount=cpur*(cdis/100);
-let taxableamount=cpur-discountamount;
-let taxper=parseFloat(sgs);
-let taxamountt=taxper*taxableamount;
-let cessamount=taxableamount*(1/100);
-let cqty=parseFloat(qun)
-let netamount=(taxableamount+taxamountt+cessamount)*cqty;
-let tgst=parseFloat(totalgs);
-let sgst=totalgs/2;
-let cgst=totalgs/2;
 
 
 
@@ -171,11 +157,11 @@ let cgst=totalgs/2;
       url:"http://localhost:7777/api/mainform_data",
       method: 'POST',
       data: {
-        itemcode:itemcode,
+        itemcode: name,
         item:itemName,
         batchno:manuf,
         manufacture:manuf,
-        qty:cqty,
+        qty:qun,
         mrp:mr,
         pur_rate:pur,
         exp_date:exp,
@@ -184,15 +170,15 @@ let cgst=totalgs/2;
         invoicedate:invdate,
         supplier:supp,
         payment:gender,
-        taxamount:taxamountt,
+        taxamount:tax,
         disper:dis,
-        disamnt:discountamount,
-        sgst:taxper,
-        cgst:sgst,
-        cess:cgst,
+        disamnt:disam,
+        sgst:sgs,
+        cgst:cgs,
+        cess:ces,
         total_gst:totalgs,
-       taxable_amnt:taxableamount,
-       netamnt:netamount
+        taxable_amnt:taxam,
+        netamnt:netam
       }
       
     }).then((response) => {
@@ -316,7 +302,6 @@ let cgst=totalgs/2;
                             marginLeft: 21,
                             marginTop: -70
                           }}
-                          
                         />
                       </FormItem>
                     </div>
@@ -484,7 +469,6 @@ let cgst=totalgs/2;
                         &nbsp;&nbsp;Free Qty
                         <Input
                           type="text"
-                          name="frqty"
                           style={{
                             width: 100,
                             marginLeft: 22,
@@ -511,7 +495,7 @@ let cgst=totalgs/2;
                         </button>
                       </div>
 
-                      {/* <div style={{ marginTop: -45, marginLeft: 500 }}>
+                      <div style={{ marginTop: -45, marginLeft: 500 }}>
                         &nbsp;&nbsp;
                         <button
                           type="reset"
@@ -525,7 +509,7 @@ let cgst=totalgs/2;
                         >
                           Clear
                         </button>
-                      </div> */}
+                      </div>
                     </FormItem>
 
                     <div style={{ marginLeft: 400, marginTop: -180 }}>
@@ -636,7 +620,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="tax"
-                          value={taxamountt}
+                          value={tax}
                           onChange={e => settax(e.target.value)}
                           style={{
                             width: 163,
@@ -668,7 +652,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="disam"
-                          value={discountamount}
+                          value={disam}
                           onChange={e => setdisam(e.target.value)}
                           style={{
                             width: 163,
@@ -680,28 +664,12 @@ let cgst=totalgs/2;
                     </FormItem>
                     <FormItem>
                       <div style={{ marginTop: -89, marginLeft: 310 }}>
-                        &nbsp;&nbsp;TaxPer
+                        &nbsp;&nbsp;SGST
                         <Input
                           type="text"
                           name="sgs"
                           value={sgs}
                           onChange={e => setsgs(e.target.value)}
-                          style={{
-                            width: 93,
-                            marginLeft: 25,
-                            marginTop: -30
-                          }}
-                        />
-                      </div>
-                    </FormItem>
-                    <FormItem>
-                      <div style={{ marginTop: 13, marginLeft: 310 }}>
-                        &nbsp;&nbsp;SGST
-                        <Input
-                          type="text"
-                          name="cgs"
-                          value={sgst}
-                          onChange={e => setcgs(e.target.value)}
                           style={{
                             width: 93,
                             marginLeft: 30,
@@ -715,12 +683,28 @@ let cgst=totalgs/2;
                         &nbsp;&nbsp;CGST
                         <Input
                           type="text"
+                          name="cgs"
+                          value={cgs}
+                          onChange={e => setcgs(e.target.value)}
+                          style={{
+                            width: 93,
+                            marginLeft: 30,
+                            marginTop: -30
+                          }}
+                        />
+                      </div>
+                    </FormItem>
+                    <FormItem>
+                      <div style={{ marginTop: 13, marginLeft: 310 }}>
+                        &nbsp;&nbsp;CESS
+                        <Input
+                          type="text"
                           name="ces"
-                          value={sgst}
+                          value={ces}
                           onChange={e => setces(e.target.value)}
                           style={{
                             width: 93,
-                            marginLeft: 28,
+                            marginLeft: 33,
                             marginTop: -30
                           }}
                         />
@@ -761,7 +745,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="taxam"
-                          value={taxableamount}
+                          value={taxam}
                           onChange={e => settaxam(e.target.value)}
                           style={{
                             width: 163,
@@ -783,7 +767,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="netam"
-                          value={netamount}
+                          value={netam}
                           onChange={e => setnetam(e.target.value)}
                           style={{
                             width: 163,
@@ -808,13 +792,13 @@ let cgst=totalgs/2;
                               background: "#52f841"
                             }}
                           >
-                            <b><h1>{netamount}</h1></b>
+                            <b>0.00</b>
                           </button>
                         </FormItem>
                       </div>
                     </FormItem>
                   </Frame>
-                  {/* <Frame
+                  <Frame
                     style={{
                       width: 1042,
                       height: 130
@@ -846,7 +830,7 @@ let cgst=totalgs/2;
                         </tr>
                       </tbody>
                     </table>
-                  </Frame> */}
+                  </Frame>
 
                   <div style={{ width: 100 }}>
                     <Modal show={show} onHide={handleClose}>

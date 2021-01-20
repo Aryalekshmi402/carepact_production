@@ -16,16 +16,17 @@ export default function() {
     //   htmlBefore: '<i class="material-icons">note_add</i>',
     //   to: "/add-new-post",
     // },
-    // {
-    //   title: "Forms & Components",
-    //   htmlBefore: '<i class="material-icons">view_module</i>',
-    //   to: "/components-overview",
-    // },
+     {
+       title: "SalesBill",
+       htmlBefore: '<i class="material-icons">view_module</i>',
+      to: "/components-overview",
+     },
     {
-      title: "SalesBill",
+      title: "PurchaseBill",
       htmlBefore: '<i class="material-icons">table_chart</i>',
       to: "/tables",
     },
+    
     // {
     //   title: "User Profile",
     //   htmlBefore: '<i class="material-icons">person</i>',
