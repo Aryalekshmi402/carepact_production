@@ -17,6 +17,7 @@
     "lodash.find": "^4.6.0",
     "react": "^16.6.3",
     "react-autosuggest": "^10.1.0",
+    "react-bootstrap-sweetalert": "^5.2.0",
     "react-bootstrap-validation": "^0.1.11",
     "react-dom": "^16.6.3",
     "react-frame-component": "^4.1.3",

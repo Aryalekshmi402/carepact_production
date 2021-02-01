@@ -1,5 +1,13 @@
-import React, { useState, Component, useEffect } from "react";
-import { Container, Row, Col, Card, CardHeader, CardBody } from "shards-react";
+import React, { useState, Component, useEffect, useCallback } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  CardHeader,
+  CardBody,
+  number
+} from "shards-react";
 import Frame from "react-frame-component";
 import axios from "axios";
 import { styles } from "./style";
@@ -36,8 +44,13 @@ function selectdata(props) {
 }
 
 const App = () => {
+ 
+  const [contactArray, setContactArray] = useState([]);
+  let identity = 0;
+  const [temp, settemp] = useState([]);
+  //const [name,setname]=useState([]);
   const [state, setState] = useState({
-    name: ''
+    name: ""
   });
 
   const [name, setEmail] = React.useState("");
@@ -52,6 +65,12 @@ const App = () => {
   const [subrack, setSubrack] = React.useState("");
   const [mrp, setMrp] = React.useState("");
   const [mcontent, setMcontent] = React.useState("");
+  const [sg, setsg] = React.useState("");
+  const [sdisc, setsdisc] = React.useState("");
+  const [cg, setcg] = React.useState("");
+  const [mdisc, setmdisc] = React.useState("");
+  const [ig, setig] = React.useState("");
+  const [gflag, setgflag] = React.useState("");
   const [itemcode, setitemcode] = React.useState("");
   const [batchno, setbatchno] = React.useState("");
   const [manuf, setmanuf] = React.useState("");
@@ -66,36 +85,46 @@ const App = () => {
   const [gender, setgender] = React.useState("");
   const [tax, settax] = React.useState(0);
   const [dis, setdis] = React.useState(0);
-  const [disam, setdisam] = React.useState("");
+  const [disam, setdisam] = React.useState(0);
   const [sgs, setsgs] = React.useState(0);
-  const [cgs, setcgs] = React.useState("");
-  const [ces, setces] = React.useState("");
-  const [totalgs, settotalgs] = React.useState("");
+  const [cgs, setcgs] = React.useState();
+  const [ces, setces] = React.useState();
+  const [totalgs, settotalgs] = React.useState(0);
   const [taxam, settaxam] = React.useState(0);
   const [netam, setnetam] = React.useState(0);
+  const [gd, setgrand] = React.useState(0);
 
+  let cqty = parseFloat(qun);
+  let cpur = parseFloat(pur); //purchase rate
+  let new_pr = cpur * cqty;
+  let cdis = parseFloat(dis); //discount percentage
+  let discountamount = new_pr * (cdis / 100);
+  let taxableamount = new_pr - discountamount;
+  let taxpe = parseFloat(sgs);
+  let sgs_g = parseFloat(cgs);
+  let cgs_g = parseFloat(ces);
+  let taxper = sgs_g + cgs_g;
+  let taxamountt = (taxper / 100) * taxableamount;
+  let netamount = taxableamount + taxamountt;
+  let roundnet = netamount.toFixed(2);
+  let grd=parseInt(gd)+parseInt(roundnet);
+ 
+  let round_discount_amnt = discountamount.toFixed(2);
+  let round_tax_amnt = taxamountt.toFixed(2);
+  let round_taxable_amnt = taxableamount.toFixed(2);
+  
+  
+ 
 
+  let cmrp = parseFloat(mr); //mrp
+  let cessamount = taxableamount * (1 / 100);
 
-let cmrp=parseFloat(mr);//mrp
-let cpur=parseFloat(pur);//purchase rate
-let cdis=parseFloat(dis);//discount percentage
-let discountamount=cpur*(cdis/100);
-let taxableamount=cpur-discountamount;
-let taxper=parseFloat(sgs);
-let taxamountt=taxper*taxableamount;
-let cessamount=taxableamount*(1/100);
-let cqty=parseFloat(qun)
-let netamount=(taxableamount+taxamountt+cessamount)*cqty;
-let tgst=parseFloat(totalgs);
-let sgst=totalgs/2;
-let cgst=totalgs/2;
-
-
+  let tgst = parseFloat(totalgs);
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
+  
   const [list, setList] = useState([]);
   let optionItems = list.map(planet => (
     <option key={planet.name}>{planet.name}</option>
@@ -104,7 +133,7 @@ let cgst=totalgs/2;
   const [itemName, setItemName] = useState("");
   const getDetails = item => {
     setItemName(item.product);
-    setSuggestion([])
+    setSuggestion([]);
   };
   const autoSuggestion = suggestions.map(item => (
     <li style={styles.suggestionLi} onClick={() => getDetails(item)}>
@@ -138,72 +167,91 @@ let cgst=totalgs/2;
       });
   };
 
-  const handleSubmit =event => {
+  const handleSubmit = event => {
     axios({
-      url:"http://localhost:7777/api/form_data",
-      method: 'POST',
+      url: "http://localhost:7777/api/form_data",
+      method: "POST",
       data: {
         product: name,
-        manufacture:manufacture,
-        hsn:hsn,
-        schname:schname,
-        uom:uom,
-        strip:strip,
-        pack:pack,
-        loc:loc,
-        rack:rack,
-        subrack:subrack,
-        mrp:mrp,
-        major_content:mcontent
+        manufacture: manufacture,
+        hsn: hsn,
+        schname: schname,
+        uom: uom,
+        strip: strip,
+        pack: pack,
+        loc: loc,
+        rack: rack,
+        subrack: subrack,
+        mrp: mrp,
+        major_content: mcontent,
+        sgst: sg,
+        strd_disc: sdisc,
+        cgst: cg,
+        max_disc: mdisc,
+        igst: ig,
+        gst_flag: gflag
       }
-      
-    }).then((response) => {
+    }).then(response => {
       alert(response.data.data);
       handleClose();
-     
     });
     event.preventDefault();
-    
-  }
+  };
 
-  const mainSubmit =event => {
-    axios({
-      url:"http://localhost:7777/api/mainform_data",
-      method: 'POST',
-      data: {
-        itemcode:itemcode,
-        item:itemName,
-        batchno:manuf,
-        manufacture:manuf,
-        qty:cqty,
-        mrp:mr,
-        pur_rate:pur,
-        exp_date:exp,
-        hsn:hs,
-        invoiceno:inv,
-        invoicedate:invdate,
-        supplier:supp,
-        payment:gender,
-        taxamount:taxamountt,
-        disper:dis,
-        disamnt:discountamount,
-        sgst:taxper,
-        cgst:sgst,
-        cess:cgst,
-        total_gst:totalgs,
-       taxable_amnt:taxableamount,
-       netamnt:netamount
+  const main_add = () => {
+    identity = identity + 1;
+    console.log(identity);
+
+    setContactArray([
+
+      ...contactArray,
+      {
+        itemcode: itemcode,
+        item: itemName,
+        batchno: batchno,
+        manufacture: manuf,
+        qty: cqty,
+        mrp: mr,
+        pur_rate: pur,
+        exp_date: exp,
+        hsn: hs,
+        invoiceno: inv,
+        invoicedate: invdate,
+        supplier: supp,
+        payment: gender,
+        taxamount: round_tax_amnt,
+        disper: dis,
+        disamnt: round_discount_amnt,
+        sgst: taxper,
+        cgst: cgs,
+        cess: ces,
+        taxper:taxper,
+        total_gst: totalgs,
+        taxable_amnt: round_taxable_amnt,
+        netamnt: roundnet,
+        grand_total:gd
       }
-      
-    }).then((response) => {
+    ]);
+   
+    alert("adding new row...");
+    console.log(contactArray);
+      setgrand(gd+parseFloat(roundnet))
+    
+  };
+
+  const mainSubmit = event => {
+    axios({
+      url: "http://localhost:7777/api/mainform_data",
+      method: "POST",
+      data: contactArray
+    }).then(response => {
       alert(response.data.data);
       handleClose();
-     
+      setContactArray([]);
     });
     event.preventDefault();
-    
-  }
-  
+  };
+
   const getData = () => {
     fetch("http://localhost:7777/api/getdata", {
       method: "GET",
@@ -225,12 +273,11 @@ let cgst=totalgs/2;
       })
       .catch(err => console.log(err));
   };
-  
+
   useEffect(() => {
     //alert(1)
     getData();
   }, []);
-  
 
   return (
     <div className="App">
@@ -288,7 +335,7 @@ let cgst=totalgs/2;
                     span: 1
                   }}
                   layout="horizontal"
-       initialValues={{
+                  initialValues={{
                     size: 1
                   }}
                   onValuesChange={2}
@@ -302,7 +349,6 @@ let cgst=totalgs/2;
                   >
                     <div style={{ color: "#ff0000" }}>Product details</div>
                     <br />
-                    
                     <div style={{ marginTop: 6, marginLeft: 20 }}>
                       <FormItem>
                         Itemcode &nbsp;&nbsp;
@@ -316,7 +362,6 @@ let cgst=totalgs/2;
                             marginLeft: 21,
                             marginTop: -70
                           }}
-                          
                         />
                       </FormItem>
                     </div>
@@ -381,8 +426,8 @@ let cgst=totalgs/2;
                         <input
                           type="text"
                           name="batchno"
-                            value={batchno}
-                            onChange={e => setbatchno(e.target.value)}
+                          value={batchno}
+                          onChange={e => setbatchno(e.target.value)}
                           style={{
                             width: 163,
                             marginLeft: 36,
@@ -467,9 +512,9 @@ let cgst=totalgs/2;
                         <Form.Item name="price">
                           &nbsp;&nbsp;HSNCode
                           <input
-                           name="hs"
-                           value={hs}
-                           onChange={e => seths(e.target.value)}
+                            name="hs"
+                            value={hs}
+                            onChange={e => seths(e.target.value)}
                             style={{
                               width: 170,
                               marginLeft: 15,
@@ -498,12 +543,26 @@ let cgst=totalgs/2;
                       <div style={{ marginTop: -40, marginLeft: 400 }}>
                         &nbsp;&nbsp;
                         <button
-                        onClick={mainSubmit}
+                          onClick={mainSubmit}
                           style={{
                             width: 100,
                             height: 35,
                             marginLeft: 32,
                             marginTop: 10,
+                            background: "#afd8d6"
+                          }}
+                        >
+                          Save
+                        </button>
+                      </div>
+                      <div style={{ marginTop: -27, marginLeft: 500 }}>
+                        <button
+                          onClick={main_add}
+                          style={{
+                            width: 100,
+                            height: 35,
+                            marginLeft: 42,
+                            marginTop: -50,
                             background: "#afd8d6"
                           }}
                         >
@@ -602,7 +661,7 @@ let cgst=totalgs/2;
                         </select>
                       </div>
                     </FormItem>
-                   
+
                     <FormItem>
                       <div
                         style={{
@@ -612,14 +671,26 @@ let cgst=totalgs/2;
                       >
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Payment
                         &nbsp;&nbsp;{" "}
-                        <input type="radio" value="Male" name="gender" value={gender}
-                          onChange={e => setgender(e.target.value)}/> Cash
-                        &nbsp;&nbsp;
-                        <input type="radio" value="Female" name="gender" value={gender}
-                          onChange={e => setgender(e.target.value)} /> Card
-                        &nbsp;&nbsp;{" "}
-                        <input type="radio" value="Other" name="gender" value={gender}
-                          onChange={e => setgender(e.target.value)}/>{" "}
+                        <input
+                          type="radio"
+                          name={gender}
+                          value="cash"
+                          onChange={e => setgender(e.target.value)}
+                        />{" "}
+                        Cash &nbsp;&nbsp;
+                        <input
+                          type="radio"
+                          name={gender}
+                          value="card"
+                          onChange={e => setgender(e.target.value)}
+                        />{" "}
+                        Card &nbsp;&nbsp;{" "}
+                        <input
+                          type="radio"
+                          name={gender}
+                          value="credit"
+                          onChange={e => setgender(e.target.value)}
+                        />{" "}
                         Credit
                       </div>
                     </FormItem>
@@ -636,7 +707,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="tax"
-                          value={taxamountt}
+                          value={round_tax_amnt}
                           onChange={e => settax(e.target.value)}
                           style={{
                             width: 163,
@@ -668,7 +739,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="disam"
-                          value={discountamount}
+                          value={round_discount_amnt}
                           onChange={e => setdisam(e.target.value)}
                           style={{
                             width: 163,
@@ -684,7 +755,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="sgs"
-                          value={sgs}
+                          value={taxper}
                           onChange={e => setsgs(e.target.value)}
                           style={{
                             width: 93,
@@ -700,7 +771,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="cgs"
-                          value={sgst}
+                          value={cgs}
                           onChange={e => setcgs(e.target.value)}
                           style={{
                             width: 93,
@@ -716,7 +787,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="ces"
-                          value={sgst}
+                          value={ces}
                           onChange={e => setces(e.target.value)}
                           style={{
                             width: 93,
@@ -761,7 +832,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="taxam"
-                          value={taxableamount}
+                          value={round_taxable_amnt}
                           onChange={e => settaxam(e.target.value)}
                           style={{
                             width: 163,
@@ -783,7 +854,7 @@ let cgst=totalgs/2;
                         <Input
                           type="text"
                           name="netam"
-                          value={netamount}
+                          value={roundnet}
                           onChange={e => setnetam(e.target.value)}
                           style={{
                             width: 163,
@@ -800,6 +871,7 @@ let cgst=totalgs/2;
                         <FormItem>
                           &nbsp;&nbsp;
                           <button
+                            name="grand_total"
                             style={{
                               width: 180,
                               height: 100,
@@ -808,45 +880,13 @@ let cgst=totalgs/2;
                               background: "#52f841"
                             }}
                           >
-                            <b><h1>{netamount}</h1></b>
+                            <h1>{gd.toFixed(2)}</h1>
+                            
                           </button>
                         </FormItem>
                       </div>
                     </FormItem>
                   </Frame>
-                  {/* <Frame
-                    style={{
-                      width: 1042,
-                      height: 130
-                    }}
-                  >
-                    <table style={{ width: 100, border: 1 }}>
-                      <tbody>
-                        <div
-                          style={{
-                            background: "#010404",
-                            width: 1025,
-                            marginTop: -10,
-                            color: "white"
-                          }}
-                        >
-                          <th style={{ width: 100 }}>product</th>
-                          <th style={{ width: 100 }}>qty</th>
-                          <th style={{ width: 100 }}>free</th>
-                          <th style={{ width: 100 }}>mrp</th>
-                          <th style={{ width: 100 }}>batch</th>
-                          <th style={{ width: 100 }}>exp</th>
-                          <th style={{ width: 100 }}>pur_rate</th>
-                          <th style={{ width: 100 }}>payment</th>
-                          <th style={{ width: 100 }}>net_amnt</th>
-                          <th style={{ width: 100 }}>total</th>
-                        </div>
-                        <tr>
-                          <td style={{ border: 1 }}>hhh</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </Frame> */}
 
                   <div style={{ width: 100 }}>
                     <Modal show={show} onHide={handleClose}>
@@ -1042,6 +1082,9 @@ let cgst=totalgs/2;
                                   sgct
                                   <Input
                                     type="text"
+                                    name="sg"
+                                    onChange={e => setsg(e.target.value)}
+                                    value={sg}
                                     style={{
                                       width: 100,
                                       marginLeft: 24,
@@ -1056,6 +1099,9 @@ let cgst=totalgs/2;
                                   strd_disc
                                   <Input
                                     type="text"
+                                    name="sdisc"
+                                    onChange={e => setsdisc(e.target.value)}
+                                    value={sdisc}
                                     style={{
                                       width: 100,
                                       marginLeft: 23,
@@ -1067,6 +1113,9 @@ let cgst=totalgs/2;
                                   cgst
                                   <Input
                                     type="text"
+                                    name="cg"
+                                    onChange={e => setcg(e.target.value)}
+                                    value={cg}
                                     style={{
                                       width: 100,
                                       marginLeft: 20,
@@ -1081,6 +1130,9 @@ let cgst=totalgs/2;
                                   max_disc
                                   <Input
                                     type="text"
+                                    name="mdisc"
+                                    onChange={e => setmdisc(e.target.value)}
+                                    value={mdisc}
                                     style={{
                                       width: 100,
                                       marginLeft: 20,
@@ -1092,6 +1144,9 @@ let cgst=totalgs/2;
                                   igst
                                   <Input
                                     type="text"
+                                    name="ig"
+                                    onChange={e => setig(e.target.value)}
+                                    value={ig}
                                     style={{
                                       width: 100,
                                       marginLeft: 24,
@@ -1106,6 +1161,9 @@ let cgst=totalgs/2;
                                   gst_flag
                                   <Input
                                     type="text"
+                                    name="gflag"
+                                    onChange={e => setgflag(e.target.value)}
+                                    value={gflag}
                                     style={{
                                       width: 100,
                                       marginLeft: 29,
@@ -1123,6 +1181,57 @@ let cgst=totalgs/2;
                         <Button onClick={handleSubmit}>Save Changes</Button>
                       </Modal.Footer>
                     </Modal>
+                  </div>
+                    
+                  <div>
+                  
+                  <table border="2" cellPadding="12" cellSpacing="8"  style={{border:"white",background:"white"}}>
+                                <tr style={{width:900,align:"center"}}>
+                           
+                                  <th style={{width:400,align:"center"}}>InvoiceNo</th>
+                                  <th style={{width:400,align:"center"}}>itemName</th>
+                                  <th style={{width:400,align:"center"}}>batchno</th>
+                                  
+                                  <th style={{width:400,align:"center"}}>Quantity</th>
+                                  <th style={{width:400,align:"center"}}>Mrp</th>
+                                  <th style={{width:400,align:"center"}}>Pur_rate</th>
+                                  <th style={{width:400,align:"center"}}>HSNCode</th>
+                                  <th style={{width:400,border:"white",align:"center"}}>dis.%</th>
+                                  <th style={{width:400,border:"white",align:"center"}}>tax.%</th>
+                                  <th style={{width:400,border:"white",align:"center"}}>TaxAmnt</th>
+                                  <th style={{width:400,border:"white",align:"center"}}>NetAmnt</th>
+                                 
+                                  
+                                  
+                                  </tr>
+                                  </table>
+                        
+                          {contactArray.map(number => {
+                            return  (
+                              <table border="2" cellPadding="12" cellSpacing="8" style={{background:"white"}}>
+                              
+                                  <tr>
+
+                                <td style={{width:100,border:"white",align:"center"}}>{number.invoiceno}</td>
+                                <td style={{width:150,border:"white"}}>{number.item}</td>
+                                <td style={{width:98,border:"white",align:"center"}}>{number.batchno}</td>
+                                <td style={{width:98,border:"white",textAlign: "center"}}>{number.qty}</td>
+                                <td style={{width:98,border:"white",align:"center"}}>{number.mrp}</td>
+                                <td style={{width:98,border:"white",align:"center"}}>{number.pur_rate}</td>
+                                <td style={{width:98,border:"white",align:"center"}}>{number.hsn}</td>
+                                <td style={{width:98,border:"white",align:"center"}}>{number.disper}</td>
+                                <td style={{width:98,border:"white",align:"center"}}>{number.taxper}</td>
+                                <td style={{width:98,border:"white",align:"center"}}>{number.taxamount}</td>
+                                <td style={{width:98,border:"white",align:"center"}}>{number.netamnt}</td>
+                               
+                                </tr>
+                              </table>
+                           
+                            
+                            
+                           ); })}
+                          {/* {identity} */}
+                       
                   </div>
                 </Form>
               </CardBody>
