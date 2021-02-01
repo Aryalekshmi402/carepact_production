@@ -1,8 +1,6 @@
 var express = require("express");
 var path = require("path");
-//var mongo = require("mongoose");
-// const bodyParser = require("body-parser");
-var morgan = require("morgan");
+
 var db = require("./config.js");
 const cors = require("cors");
 
@@ -42,6 +40,12 @@ var product_master = new Schema(
     subtrack: { type: String },
     mrp: { type: String },
     major_content: { type: String },
+    sgst: { type: String },
+    strd_disc: { type: String },
+    cgst: { type: String },
+    max_disc: { type: String },
+    igst: { type: String },
+    gst_flag: { type: String },
   },
   { versionKey: false }
 );
@@ -70,6 +74,7 @@ var sub_master = new Schema(
     total_gst: { type: String },
     taxableamnt: { type: String },
     netamnt: { type: String },
+    grand:{type:String}
 
   },
   { versionKey: false }
@@ -95,7 +100,8 @@ var sale_master = new Schema(
    discountamnt: { type: String },
    taxamnt: { type: String },
    taxableamnt: { type: String },
-   netamnt: { type: String }
+   netamnt: { type: String },
+   grand:{type:String}
 
    
   },
@@ -124,7 +130,7 @@ app.get("/api/getdata", cors(), function(req, res) {
 
 
 app.post("/api/suggestions", cors(), function(req, res) {
-  ProductMaster.find({product: {'$regex': req.body.name.toUpperCase()}}, function(err, data) {
+  ProductMaster.find({product: {'$regex':new RegExp("^"+req.body.name,"i")}}, function(err, data) {
     if (err) {
       res.send(err);
     } else {
@@ -150,14 +156,14 @@ app.post("/api/form_data", cors(), function(req, res) {
       res.send(err);
     } else {
       res.send({ data: "Record has been Inserted..!!" });
+      
     }
   });
  console.log(req.body);
 });
 
 app.post("/api/mainform_data", cors(), function(req, res) {
-  var newProduct = new sub_master(req.body)
-  newProduct.save(function(err, data) {
+  sub_master.collection.insertMany(req.body, function (err, docs) {
     if (err) {
       res.send(err);
     } else {
@@ -168,8 +174,7 @@ app.post("/api/mainform_data", cors(), function(req, res) {
 });
 
 app.post("/api/sale_form_data", cors(), function(req, res) {
-  var newProduct = new sale_master(req.body)
-  newProduct.save(function(err, data) {
+  sale_master.collection.insertMany(req.body, function (err, docs) {
     if (err) {
       res.send(err);
     } else {
@@ -179,11 +184,11 @@ app.post("/api/sale_form_data", cors(), function(req, res) {
  console.log(req.body);
 });
 
-
-
-
-
-
+app.post("/api/item-details", cors(), function(req, res) {
+   const data={quantity:10,mrp:160,discountper:5};
+    res.send({ data });
+  
+});
 
 
 app.post("/api/savedata", function(req, res) {
