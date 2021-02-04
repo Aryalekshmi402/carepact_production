@@ -473,8 +473,8 @@ const CompleteFormExample = () => {
                   
                 </Frame>
                 <div>
-                <table border="2" cellPadding="12" cellSpacing="8"  style={{border:"white",background:"white"}}>
-                                <tr style={{width:900,align:"center"}}>
+                <table border="2" cellPadding="12" cellSpacing="8" style={{border:"white",background:"white",width: "100%"}}>
+                                <tr style={{width:"100%",align:"center"}}>
                            
                                   <th style={{width:400,align:"center"}}>InvoiceNo</th>
                                   <th style={{width:400,align:"center"}}>itemName</th>
@@ -488,7 +488,7 @@ const CompleteFormExample = () => {
                                   </table>
                                   {contactArray.map(number => {
                             return  (
-                              <table border="2" cellPadding="12" cellSpacing="8" style={{background:"white"}}>
+                              <table border="2" cellPadding="12" cellSpacing="8" style={{background:"white",width:"100%"}}>
                               
                                   <tr>
 

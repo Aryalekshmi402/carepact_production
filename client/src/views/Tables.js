@@ -324,7 +324,7 @@ const App = () => {
               <CardBody
                 className=""
                 style={{
-                  background: "#c7b500 "
+                  background: "#0fb5cd"
                 }}
               >
                 <Form
@@ -347,7 +347,7 @@ const App = () => {
                       height: 220
                     }}
                   >
-                    <div style={{ color: "#ff0000" }}>Product details</div>
+                    <div style={{ color: "#3e302f" }}>Product details</div>
                     <br />
                     <div style={{ marginTop: 6, marginLeft: 20 }}>
                       <FormItem>
@@ -477,7 +477,7 @@ const App = () => {
                           value={mr}
                           onChange={e => setmr(e.target.value)}
                           style={{
-                            width: 160,
+                            width: 164,
                             marginLeft: 33,
                             marginTop: 20
                           }}
@@ -1185,7 +1185,7 @@ const App = () => {
                     
                   <div>
                   
-                  <table border="2" cellPadding="12" cellSpacing="8"  style={{border:"white",background:"white"}}>
+                  <table border="2" cellPadding="12" cellSpacing="8"  style={{border:"white",background:"white",width:"100%"}}>
                                 <tr style={{width:900,align:"center"}}>
                            
                                   <th style={{width:400,align:"center"}}>InvoiceNo</th>
@@ -1208,7 +1208,7 @@ const App = () => {
                         
                           {contactArray.map(number => {
                             return  (
-                              <table border="2" cellPadding="12" cellSpacing="8" style={{background:"white"}}>
+                              <table border="2" cellPadding="12" cellSpacing="8" style={{background:"white",width:"100%"}}>
                               
                                   <tr>
 
