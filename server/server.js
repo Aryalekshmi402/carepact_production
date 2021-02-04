@@ -8,8 +8,6 @@ var app = express();
 var port = process.env.port || 7777;
 var srcpath = path.join(__dirname, "/public");
 app.use(express.static("public"));
-// app.use(bodyParser.json({ limit: "5mb" }));
-// app.use(bodyParser.urlencoded({ extended: true, limit: "5mb" }));
 app.use(cors());
 
 var bodyParser = require("body-parser");
@@ -138,15 +136,6 @@ app.post("/api/suggestions", cors(), function(req, res) {
       res.send(data);
     }
   });
-  // const data = db
-  //   .collection("product_master")
-  //   .find({})
-  //   .toArray(function(err, result) {
-  //     if (err) throw err;
-  //     console.log(result);
-  //     db.close();
-  //   });
-  // res.send(data);
 });
 
 app.post("/api/form_data", cors(), function(req, res) {
